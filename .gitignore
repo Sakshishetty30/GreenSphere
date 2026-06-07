@@ -30,8 +30,18 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# env files (strict hiding to prevent secret leaks)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# database files (do not leak user data)
+*.db
+*.sqlite
+*.sqlite3
+greensphere.db
 
 # vercel
 .vercel

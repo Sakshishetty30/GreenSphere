@@ -1,0 +1,214 @@
+"use client";
+
+import React, { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Eye, EyeOff } from "lucide-react";
+import { registerUser } from "@/actions/auth";
+
+export default function RegisterPage() {
+  const router = useRouter();
+
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    phone: "",
+  });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+
+    if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword || !formData.phone) {
+      setError("Please complete all fields.");
+      return;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+
+    if (formData.password.length < 8) {
+      setError("Password must be at least 8 characters.");
+      return;
+    }
+
+    setLoading(true);
+
+    const formDataObj = new FormData();
+    Object.entries(formData).forEach(([key, value]) => formDataObj.append(key, value));
+
+    const result = await registerUser(formDataObj);
+
+    setLoading(false);
+
+    if (result.success) {
+      router.push(`/verify-otp?email=${encodeURIComponent(formData.email)}`);
+    } else {
+      setError(result.error || "Failed to register.");
+    }
+  };
+
+  return (
+    <div className="min-h-screen relative flex items-center justify-center p-4 lg:p-8 font-sans overflow-hidden">
+      {/* Blurred background image behind everything */}
+      <div className="absolute inset-0 z-0">
+        <img 
+          src="https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&q=80&w=2000" 
+          alt="Tropical Background" 
+          className="w-full h-full object-cover blur-[8px] scale-105 opacity-60" 
+        />
+        <div className="absolute inset-0 bg-white/40 mix-blend-overlay"></div>
+      </div>
+
+      {/* Main Card Container */}
+      <div className="relative z-10 w-full max-w-[900px] bg-transparent lg:bg-white rounded-[2rem] lg:rounded-[3rem] shadow-none lg:shadow-2xl overflow-hidden flex flex-col lg:flex-row lg:max-h-[90vh]">
+        
+        {/* Left Side (Form Area) */}
+        <div className="w-full lg:w-[45%] bg-white/85 lg:bg-white backdrop-blur-xl lg:backdrop-blur-none p-6 sm:p-8 lg:pl-12 lg:pr-6 lg:py-6 flex flex-col justify-center rounded-[2rem] lg:rounded-none shadow-2xl lg:shadow-none relative z-20 overflow-y-auto scrollbar-hide">
+          
+          <h1 className="text-3xl font-bold text-gray-900 mb-4 tracking-tight font-serif">Sign up</h1>
+          
+          {error && (
+            <div className="p-3 mb-3 rounded-2xl border border-red-200 bg-red-50 text-red-600 text-[13px] text-center font-medium">
+              {error}
+            </div>
+          )}
+          
+          <form onSubmit={handleSubmit} className="space-y-3">
+            <div className="space-y-1">
+              <label className="text-[11px] font-semibold text-gray-500 ml-4 uppercase tracking-wider">Full Name</label>
+              <input 
+                type="text" 
+                name="name"
+                required 
+                value={formData.name} 
+                onChange={handleChange} 
+                className="w-full bg-white border border-gray-300 text-gray-900 px-4 py-2.5 rounded-full focus:border-[#36534B] focus:ring-1 focus:ring-[#36534B] outline-none transition-all text-[14px] shadow-sm" 
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[11px] font-semibold text-gray-500 ml-4 uppercase tracking-wider">Email address</label>
+              <input 
+                type="email" 
+                name="email"
+                required 
+                value={formData.email} 
+                onChange={handleChange} 
+                className="w-full bg-white border border-gray-300 text-gray-900 px-4 py-2.5 rounded-full focus:border-[#36534B] focus:ring-1 focus:ring-[#36534B] outline-none transition-all text-[14px] shadow-sm" 
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[11px] font-semibold text-gray-500 ml-4 uppercase tracking-wider">Phone number</label>
+              <input 
+                type="text" 
+                name="phone"
+                required 
+                value={formData.phone} 
+                onChange={handleChange} 
+                className="w-full bg-white border border-gray-300 text-gray-900 px-4 py-2.5 rounded-full focus:border-[#36534B] focus:ring-1 focus:ring-[#36534B] outline-none transition-all text-[14px] shadow-sm" 
+              />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+              <div className="space-y-1">
+                <label className="text-[11px] font-semibold text-gray-500 ml-4 uppercase tracking-wider">Password</label>
+                <div className="relative">
+                  <input 
+                    type={showPassword ? "text" : "password"} 
+                    name="password"
+                    required 
+                    value={formData.password} 
+                    onChange={handleChange} 
+                    className="w-full bg-white border border-gray-300 text-gray-900 pl-4 pr-10 py-2.5 rounded-full focus:border-[#36534B] focus:ring-1 focus:ring-[#36534B] outline-none transition-all text-[14px] shadow-sm" 
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[11px] font-semibold text-gray-500 ml-4 uppercase tracking-wider">Confirm</label>
+                <div className="relative">
+                  <input 
+                    type={showConfirmPassword ? "text" : "password"} 
+                    name="confirmPassword"
+                    required 
+                    value={formData.confirmPassword} 
+                    onChange={handleChange} 
+                    className="w-full bg-white border border-gray-300 text-gray-900 pl-4 pr-10 py-2.5 rounded-full focus:border-[#36534B] focus:ring-1 focus:ring-[#36534B] outline-none transition-all text-[14px] shadow-sm" 
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <button 
+              type="submit" 
+              disabled={loading}
+              className="w-full mt-4 py-3 rounded-full bg-[#36534B] text-white font-medium text-[15px] hover:bg-[#2A423A] shadow-md hover:shadow-lg transition-all disabled:opacity-50"
+            >
+              {loading ? "Registering..." : "Create account"}
+            </button>
+          </form>
+
+          <p className="text-center text-[13px] text-gray-500 mt-6">
+            Already have an account? <Link href="/login" className="text-[#36534B] font-bold hover:underline ml-1">Log in</Link>
+          </p>
+        </div>
+
+        {/* Right Side (Visual & Paper Cut Wave) - Only visible on LG */}
+        <div className="hidden lg:block w-[55%] relative overflow-hidden bg-white">
+          
+          {/* Custom Layered Paper Cut SVG Wave */}
+          <div className="absolute left-0 top-0 bottom-0 w-48 h-full z-10 pointer-events-none -ml-1">
+            <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-full drop-shadow-[-25px_0_25px_rgba(0,0,0,0.6)]">
+              {/* Bottom shadow layer */}
+              <path fill="#2F4F4F" d="M0,0 L0,100 L60,100 C95,75 25,65 55,45 C85,25 25,15 60,0 Z" opacity="0.4" />
+              {/* Middle shadow layer */}
+              <path fill="#e5e7eb" d="M0,0 L0,100 L45,100 C80,75 10,65 40,45 C70,25 10,15 45,0 Z" className="drop-shadow-[-10px_0_15px_rgba(0,0,0,0.3)]" />
+              {/* Top white layer bridging to the form */}
+              <path fill="white" d="M0,0 L0,100 L30,100 C65,75 -5,65 25,45 C55,25 -5,15 30,0 Z" className="drop-shadow-[-5px_0_10px_rgba(0,0,0,0.1)]" />
+            </svg>
+          </div>
+
+          {/* Tropical Leaf Image */}
+          <img 
+            src="https://images.unsplash.com/photo-1545241047-6083a3684587?auto=format&fit=crop&q=80&w=1000" 
+            alt="Tropical leaves" 
+            className="w-full h-full object-cover object-left"
+          />
+        </div>
+
+      </div>
+    </div>
+  );
+}

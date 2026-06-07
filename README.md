@@ -1,36 +1,68 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🌿 GreenSphere: Next-Gen Botanical eCommerce & Telemetry Portal
 
-## Getting Started
+GreenSphere is a premium, ultra-modern Next.js eCommerce and digital garden telemetry platform. It is engineered for rare, genetically modified botanical specimens equipped with simulated live sensory bio-telemetry. Users can purchase flora specimens, track soil hydration, access diagnostic ledgers, and consult a neural botany assistant.
 
-First, run the development server:
+---
 
+## 🚀 Step-by-Step Getting Started Guide
+
+### 1. Prerequisites
+Ensure you have the following installed on your machine:
+- **Node.js**: `v18.x` or higher (recommended: `v20.x` or higher)
+- **npm**: `v9.x` or higher (bundled with Node.js)
+
+### 2. Dependency Installation
+Navigate to the project root directory and run the following command to download and install all required modules (including Next.js, React, Tailwind CSS, and Lucide icons):
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 3. Running the Development Server
+GreenSphere uses Next.js with **Turbopack** for near-instant hot reloading. Start the development server using:
+```bash
+npm run dev
+```
+Once started:
+- Open your browser to [http://localhost:3000](http://localhost:3000) to view the landing page.
+- Modifying files under the `src` directory will hot-reload changes in real-time.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 4. Running a Production Build
+To create an optimized production bundle and compile the application's TypeScript:
+```bash
+# Compile and build the Next.js production build
+npm run build
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+# Start the compiled production build locally
+npm run start
+```
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 📁 Workspace Architecture
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+Greensphere/
+├── src/
+│   ├── app/                 # Next.js App Router Pages and Layouts
+│   │   ├── admin/           # Administrative Inventory & Sales Ledgers
+│   │   ├── checkout/        # Checkout Flow & Address Inputs
+│   │   ├── dashboard/       # User Portal (Garden Tracker, Orders, Wishlist)
+│   │   ├── products/        # Catalog Filter Grid and Details View
+│   │   ├── globals.css      # Custom Styling System Variables
+│   │   └── layout.tsx       # Core HTML Shell & Global Font Optimizers
+│   ├── components/          # Reusable UI Components & Charts
+│   │   ├── ui/              # Primitive Layout Elements (Charts, Widgets)
+│   │   ├── AiBot.tsx        # Neural Chatbot Core & Diagnostics Simulator
+│   │   └── Navbar.tsx       # Ambient Glowing Header and Navigation
+│   └── context/
+│       └── AppContext.tsx   # Global Context Provider (Mock DB & Methods)
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 🔒 Security Hardening & Crash Prevention
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This project includes hardened index boundaries and safety falls to protect client-side execution from database state issues.
+- **Index Out-of-Bounds Protection**: Recommendations and chatbot searches that retrieve arrays (e.g. `products[2]`) now automatically check array length and object existence before access. If an admin deletes products, the site gracefully renders placeholders instead of raising an unhandled `TypeError` and throwing a blank page.
+- **Strict HTTPS Media**: All Unspslash media elements load via encrypted HTTPS links.
+- **Local Storage Deserialization**: Context state deserializers catch parsing failures and gracefully fallback to default botanical data arrays.
